@@ -1,0 +1,49 @@
+export type AutoRemoveMode = 'count-based' | 'time-based';
+
+/**
+ * count-based 100, 1k, 1kk, 1m
+ */
+export type HumanNumber = string;
+
+/**
+ * s
+ * min
+ * h
+ * d 
+ * w 
+ * mon
+ * y 
+ */
+export type HumanDuration = string;
+
+export interface PluginOptions {
+  createdAtField: string;
+
+  /**
+   * - count-based: Delete items > maxItems
+   * - time-based: Delete age > maxAge
+   */
+  mode: AutoRemoveMode;
+
+  /**
+   * for count-based mode (100', '1k', '10k', '1m')
+   */
+  maxItems?: HumanNumber;
+
+  /**
+   * Max age of otem for time-based режиму ('1d', '7d', '1mon', '1y')
+   */
+  maxAge?: HumanDuration;
+
+  /**
+   * Interval for running cleanup (e.g. '1h', '1d')
+   * Default '1d'
+   */
+  interval?: HumanDuration;
+
+  /**
+   * Delete no more than X items per run
+   * Default 500
+   */
+  maxDeletePerRun?: number;
+}
