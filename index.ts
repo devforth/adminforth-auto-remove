@@ -3,11 +3,14 @@ import type { IAdminForth, IHttpServer, AdminForthResource } from "adminforth";
 import type { PluginOptions } from './types.js';
 import { parseHumanNumber } from './utils/parseNumber.js';
 import { parseDuration } from './utils/parseDuration.js';
-
+// Why do we need MAX_DELETE_PER_RUN?
 const MAX_DELETE_PER_RUN = 500;
 
 export default class AutoRemovePlugin extends AdminForthPlugin {
   options: PluginOptions;
+  // I don't understand why do you need this resource config if you alredy have it below 
+  // You can use create resource: AdminForthResourc and somewhere below just set it 
+  // Then you will remove [this._resourceConfig.columns.find(c => c.primaryKey)!.name] and will use just resource 
   protected _resourceConfig!: AdminForthResource;
   private timer?: NodeJS.Timeout;
 
@@ -35,6 +38,7 @@ export default class AutoRemovePlugin extends AdminForthPlugin {
   validateConfigAfterDiscover(adminforth: IAdminForth, resourceConfig: AdminForthResource) {
     // Check createdAtField exists and is date/datetim
     const col = resourceConfig.columns.find(c => c.name === this.options.createdAtField);
+    // I don't like error messages look at other plugins and change to something similar
     if (!col) throw new Error(`createdAtField "${this.options.createdAtField}" not found`);
     if (![AdminForthDataTypes.DATE, AdminForthDataTypes.DATETIME].includes(col.type!)) {
       throw new Error(`createdAtField must be date/datetime/timestamp`);
