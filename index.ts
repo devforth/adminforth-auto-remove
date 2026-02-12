@@ -36,8 +36,7 @@ export default class AutoRemovePlugin extends AdminForthPlugin {
   validateConfigAfterDiscover(adminforth: IAdminForth, resourceConfig: AdminForthResource) {
     // Check createdAtField exists and is date/datetim
     const col = resourceConfig.columns.find(c => c.name === this.options.createdAtField);
-    // I don't like error messages look at other plugins and change to something similar
-    if (!col) throw new Error(`createdAtField "${this.options.createdAtField}" not found`);
+    if (!col) throw new Error(`Field "${this.options.createdAtField}" not found in resource "${resourceConfig.label}"`);
     if (![AdminForthDataTypes.DATE, AdminForthDataTypes.DATETIME].includes(col.type!)) {
       throw new Error(`createdAtField must be date/datetime/timestamp`);
     }
