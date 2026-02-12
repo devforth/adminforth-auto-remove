@@ -3,8 +3,6 @@ import type { IAdminForth, IHttpServer, AdminForthResource } from "adminforth";
 import type { PluginOptions } from './types.js';
 import { parseHumanNumber } from './utils/parseNumber.js';
 import { parseDuration } from './utils/parseDuration.js';
-// Why do we need MAX_DELETE_PER_RUN?
-const MAX_DELETE_PER_RUN = 500;
 
 export default class AutoRemovePlugin extends AdminForthPlugin {
   options: PluginOptions;
@@ -72,7 +70,7 @@ export default class AutoRemovePlugin extends AdminForthPlugin {
     const allRecords = await resource.list([], null, null, [Sorts.ASC(this.options.createdAtField)]);
     if (allRecords.length <= limit) return;
 
-    const toDelete = allRecords.slice(0, allRecords.length - limit).slice(0, this.options.maxDeletePerRun || MAX_DELETE_PER_RUN);
+    const toDelete = allRecords.slice(0, allRecords.length - limit).slice(0, this.options.maxDeletePerRun);
     for (const r of toDelete) {
       await resource.delete(r[this._resourceConfig.columns.find(c => c.primaryKey)!.name]);
       console.log(`AutoRemovePlugin: deleted record ${r[this._resourceConfig.columns.find(c => c.primaryKey)!.name]} due to count-based limit`);
@@ -87,7 +85,7 @@ export default class AutoRemovePlugin extends AdminForthPlugin {
     const allRecords = await resource.list([], null, null, Sorts.ASC(this.options.createdAtField));
     const toDelete = allRecords
       .filter(r => new Date(r[this.options.createdAtField]).getTime() < threshold)
-      .slice(0, this.options.maxDeletePerRun || MAX_DELETE_PER_RUN);
+      .slice(0, this.options.maxDeletePerRun);
 
     for (const r of toDelete) {
       await resource.delete(r[this._resourceConfig.columns.find(c => c.primaryKey)!.name]);
