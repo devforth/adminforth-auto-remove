@@ -31,6 +31,11 @@ export interface PluginOptions {
   maxItems?: HumanNumber;
 
   /**
+    * For count-based mode, keep at least X items even if they are older than maxItems (100', '1k', '10k', '1m')
+    */
+  minItemsKeep?: HumanNumber;
+
+  /**
    * Max age of otem for time-based режиму ('1d', '7d', '1mon', '1y')
    */
   maxAge?: HumanDuration;
