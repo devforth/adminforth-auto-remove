@@ -34,11 +34,10 @@ export default class AutoRemovePlugin extends AdminForthPlugin {
   }
 
   validateConfigAfterDiscover(adminforth: IAdminForth, resourceConfig: AdminForthResource) {
-    // Check createdAtField exists and is date/datetim
     const col = resourceConfig.columns.find(c => c.name === this.options.createdAtField);
     if (!col) throw new Error(`Field "${this.options.createdAtField}" not found in resource "${resourceConfig.label}"`);
     if (![AdminForthDataTypes.DATE, AdminForthDataTypes.DATETIME].includes(col.type!)) {
-      throw new Error(`createdAtField must be date/datetime/timestamp`);
+      throw new Error(`Field "${this.options.createdAtField}" in resource "${resourceConfig.label}" must be of type DATE or DATETIME`);
     }
 
     // Check mode-specific options
