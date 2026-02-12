@@ -37,8 +37,15 @@ export default class AutoRemovePlugin extends AdminForthPlugin {
     }
 
     // Check mode-specific options
-    if (this.options.mode === 'count-based' && !this.options.maxItems) {
-      throw new Error('maxItems is required for count-based mode');
+    if (this.options.mode === 'count-based') {
+      if (!this.options.maxItems) {
+        throw new Error('maxItems is required for count-based mode');
+      }
+      if (this.options.minItemsKeep && parseHumanNumber(this.options.minItemsKeep) > parseHumanNumber(this.options.maxItems)) {
+        throw new Error(
+          `Option "minItemsKeep" (${this.options.minItemsKeep}) cannot be greater than "maxItems" (${this.options.maxItems}). Please set "minItemsKeep" less than or equal to "maxItems`
+        );
+      }
     }
     if (this.options.mode === 'time-based' && !this.options.maxAge) {
       throw new Error('maxAge is required for time-based mode');
