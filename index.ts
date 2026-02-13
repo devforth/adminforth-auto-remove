@@ -63,7 +63,7 @@ export default class AutoRemovePlugin extends AdminForthPlugin {
       console.error('AutoRemovePlugin runCleanup error:', err);
     }
   }
-
+  
   private async cleanupByCount(adminforth: IAdminForth) {
     const limit = parseHumanNumber(this.options.keepAtLeast!);
     const resource = adminforth.resource(this.resource.resourceId);
@@ -72,10 +72,17 @@ export default class AutoRemovePlugin extends AdminForthPlugin {
     if (allRecords.length <= limit) return;
 
     const toDelete = allRecords.slice(0, allRecords.length - limit);
-    for (const r of toDelete) {
-      await resource.delete(r[this.resource.columns.find(c => c.primaryKey)!.name]);
-      console.log(`AutoRemovePlugin: deleted record ${r[this.resource.columns.find(c => c.primaryKey)!.name]} due to count-based limit`);
+
+    const itemsPerDelete = 100;
+
+    for (let i = 0; i < toDelete.length; i += itemsPerDelete) {
+      const deletePackage = toDelete.slice(i, i + itemsPerDelete);
+      await Promise.all(
+        deletePackage.map(r => resource.delete(r[this.resource.columns.find(c => c.primaryKey)!.name]))
+      );
     }
+
+    console.log(`AutoRemovePlugin: deleted ${toDelete.length} records due to count-based limit`);
   }
 
   private async cleanupByTime(adminforth: IAdminForth) {
@@ -86,9 +93,18 @@ export default class AutoRemovePlugin extends AdminForthPlugin {
     const allRecords = await resource.list([], null, null, [Sorts.ASC(this.options.createdAtField)]);
     const toDelete = allRecords.filter(r => new Date(r[this.options.createdAtField]).getTime() < threshold);
 
-    for (const r of toDelete) {
-      await resource.delete(r[this.resource.columns.find(c => c.primaryKey)!.name]);
-      console.log(`AutoRemovePlugin: deleted record ${r[this.resource.columns.find(c => c.primaryKey)!.name]} due to time-based limit`);
+    const itemsPerDelete = 100;
+
+    for (let i = 0; i < toDelete.length; i += itemsPerDelete) {
+      const deletePackage = toDelete.slice(i, i + itemsPerDelete);
+
+      await Promise.all(
+        deletePackage.map(r => resource.delete(r[this.resource.columns.find(c => c.primaryKey)!.name]))
+      );
+
+    console.log(
+      `AutoRemovePlugin: deleted ${deletePackage.length} records due to time-based limit`
+    );
     }
   }
 
