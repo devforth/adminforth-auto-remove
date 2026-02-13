@@ -3,16 +3,11 @@ import type { IAdminForth, IHttpServer, AdminForthResource } from "adminforth";
 import type { PluginOptions } from './types.js';
 import { parseHumanNumber } from './utils/parseNumber.js';
 import { parseDuration } from './utils/parseDuration.js';
-// Why do we need MAX_DELETE_PER_RUN?
-const MAX_DELETE_PER_RUN = 500;
 
 export default class AutoRemovePlugin extends AdminForthPlugin {
   options: PluginOptions;
-  // I don't understand why do you need this resource config if you alredy have it below 
-  // You can use create resource: AdminForthResourc and somewhere below just set it 
-  // Then you will remove [this._resourceConfig.columns.find(c => c.primaryKey)!.name] and will use just resource 
-  protected _resourceConfig!: AdminForthResource;
-  private timer?: NodeJS.Timeout;
+  resource: AdminForthResource;
+  timer: NodeJS.Timeout;
 
   constructor(options: PluginOptions) {
     super(options, import.meta.url);
@@ -26,9 +21,8 @@ export default class AutoRemovePlugin extends AdminForthPlugin {
 
   async modifyResourceConfig(adminforth: IAdminForth, resourceConfig: AdminForthResource) {
     super.modifyResourceConfig(adminforth, resourceConfig);
-    this._resourceConfig = resourceConfig;
+    this.resource = resourceConfig;
 
-    // Start the cleanup timer
     const intervalMs = parseDuration(this.options.interval || '1d');
     this.timer = setInterval(() => {
       this.runCleanup(adminforth).catch(console.error);
@@ -36,20 +30,25 @@ export default class AutoRemovePlugin extends AdminForthPlugin {
   }
 
   validateConfigAfterDiscover(adminforth: IAdminForth, resourceConfig: AdminForthResource) {
-    // Check createdAtField exists and is date/datetim
     const col = resourceConfig.columns.find(c => c.name === this.options.createdAtField);
-    // I don't like error messages look at other plugins and change to something similar
-    if (!col) throw new Error(`createdAtField "${this.options.createdAtField}" not found`);
+    if (!col) throw new Error(`Field "${this.options.createdAtField}" not found in resource "${resourceConfig.label}"`);
     if (![AdminForthDataTypes.DATE, AdminForthDataTypes.DATETIME].includes(col.type!)) {
-      throw new Error(`createdAtField must be date/datetime/timestamp`);
+      throw new Error(`Field "${this.options.createdAtField}" in resource "${resourceConfig.label}" must be of type DATE or DATETIME`);
     }
 
     // Check mode-specific options
-    if (this.options.mode === 'count-based' && !this.options.maxItems) {
-      throw new Error('maxItems is required for count-based mode');
+    if (this.options.mode === 'count-based') {
+      if (!this.options.keepAtLeast) {
+        throw new Error('keepAtLeast is required for count-based mode');
+      }
+      if (this.options.minItemsKeep && parseHumanNumber(this.options.minItemsKeep) > parseHumanNumber(this.options.keepAtLeast)) {
+        throw new Error(
+          `Option "minItemsKeep" (${this.options.minItemsKeep}) cannot be greater than "keepAtLeast" (${this.options.keepAtLeast}). Please set "minItemsKeep" less than or equal to "maxItems`
+        );
+      }
     }
-    if (this.options.mode === 'time-based' && !this.options.maxAge) {
-      throw new Error('maxAge is required for time-based mode');
+    if (this.options.mode === 'time-based' && !this.options.deleteOlderThan) {
+      throw new Error('deleteOlderThan is required for time-based mode');
     }
   }
 
@@ -64,34 +63,48 @@ export default class AutoRemovePlugin extends AdminForthPlugin {
       console.error('AutoRemovePlugin runCleanup error:', err);
     }
   }
-
+  
   private async cleanupByCount(adminforth: IAdminForth) {
-    const limit = parseHumanNumber(this.options.maxItems!);
-    const resource = adminforth.resource(this._resourceConfig.resourceId);
+    const limit = parseHumanNumber(this.options.keepAtLeast!);
+    const resource = adminforth.resource(this.resource.resourceId);
 
     const allRecords = await resource.list([], null, null, [Sorts.ASC(this.options.createdAtField)]);
     if (allRecords.length <= limit) return;
 
-    const toDelete = allRecords.slice(0, allRecords.length - limit).slice(0, this.options.maxDeletePerRun || MAX_DELETE_PER_RUN);
-    for (const r of toDelete) {
-      await resource.delete(r[this._resourceConfig.columns.find(c => c.primaryKey)!.name]);
-      console.log(`AutoRemovePlugin: deleted record ${r[this._resourceConfig.columns.find(c => c.primaryKey)!.name]} due to count-based limit`);
+    const toDelete = allRecords.slice(0, allRecords.length - limit);
+
+    const itemsPerDelete = 100;
+
+    for (let i = 0; i < toDelete.length; i += itemsPerDelete) {
+      const deletePackage = toDelete.slice(i, i + itemsPerDelete);
+      await Promise.all(
+        deletePackage.map(r => resource.delete(r[this.resource.columns.find(c => c.primaryKey)!.name]))
+      );
     }
+
+    console.log(`AutoRemovePlugin: deleted ${toDelete.length} records due to count-based limit`);
   }
 
   private async cleanupByTime(adminforth: IAdminForth) {
-    const maxAgeMs = parseDuration(this.options.maxAge!);
+    const maxAgeMs = parseDuration(this.options.deleteOlderThan!);
     const threshold = Date.now() - maxAgeMs;
-    const resource = adminforth.resource(this._resourceConfig.resourceId);
+    const resource = adminforth.resource(this.resource.resourceId);
 
-    const allRecords = await resource.list([], null, null, Sorts.ASC(this.options.createdAtField));
-    const toDelete = allRecords
-      .filter(r => new Date(r[this.options.createdAtField]).getTime() < threshold)
-      .slice(0, this.options.maxDeletePerRun || MAX_DELETE_PER_RUN);
+    const allRecords = await resource.list([], null, null, [Sorts.ASC(this.options.createdAtField)]);
+    const toDelete = allRecords.filter(r => new Date(r[this.options.createdAtField]).getTime() < threshold);
 
-    for (const r of toDelete) {
-      await resource.delete(r[this._resourceConfig.columns.find(c => c.primaryKey)!.name]);
-      console.log(`AutoRemovePlugin: deleted record ${r[this._resourceConfig.columns.find(c => c.primaryKey)!.name]} due to time-based limit`);
+    const itemsPerDelete = 100;
+
+    for (let i = 0; i < toDelete.length; i += itemsPerDelete) {
+      const deletePackage = toDelete.slice(i, i + itemsPerDelete);
+
+      await Promise.all(
+        deletePackage.map(r => resource.delete(r[this.resource.columns.find(c => c.primaryKey)!.name]))
+      );
+
+    console.log(
+      `AutoRemovePlugin: deleted ${deletePackage.length} records due to time-based limit`
+    );
     }
   }
 

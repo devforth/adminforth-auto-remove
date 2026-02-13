@@ -28,22 +28,21 @@ export interface PluginOptions {
   /**
    * for count-based mode (100', '1k', '10k', '1m')
    */
-  maxItems?: HumanNumber;
+  keepAtLeast?: HumanNumber;
 
   /**
-   * Max age of otem for time-based режиму ('1d', '7d', '1mon', '1y')
+    * For count-based mode, keep at least X items even if they are older than maxItems (100', '1k', '10k', '1m')
+    */
+  minItemsKeep?: HumanNumber;
+
+  /**
+   * Max age of item for time-based mode ('1d', '7d', '1mon', '1y')
    */
-  maxAge?: HumanDuration;
+  deleteOlderThan?: HumanDuration;
 
   /**
    * Interval for running cleanup (e.g. '1h', '1d')
    * Default '1d'
    */
   interval?: HumanDuration;
-
-  /**
-   * Delete no more than X items per run
-   * Default 500
-   */
-  maxDeletePerRun?: number;
 }
