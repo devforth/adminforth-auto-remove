@@ -28,7 +28,7 @@ export interface PluginOptions {
   /**
    * for count-based mode (100', '1k', '10k', '1m')
    */
-  maxItems?: HumanNumber;
+  keepAtLeast?: HumanNumber;
 
   /**
     * For count-based mode, keep at least X items even if they are older than maxItems (100', '1k', '10k', '1m')
@@ -36,9 +36,9 @@ export interface PluginOptions {
   minItemsKeep?: HumanNumber;
 
   /**
-   * Max age of otem for time-based режиму ('1d', '7d', '1mon', '1y')
+   * Max age of item for time-based mode ('1d', '7d', '1mon', '1y')
    */
-  maxAge?: HumanDuration;
+  deleteOlderThan?: HumanDuration;
 
   /**
    * Interval for running cleanup (e.g. '1h', '1d')

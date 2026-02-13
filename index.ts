@@ -38,17 +38,17 @@ export default class AutoRemovePlugin extends AdminForthPlugin {
 
     // Check mode-specific options
     if (this.options.mode === 'count-based') {
-      if (!this.options.maxItems) {
-        throw new Error('maxItems is required for count-based mode');
+      if (!this.options.keepAtLeast) {
+        throw new Error('keepAtLeast is required for count-based mode');
       }
-      if (this.options.minItemsKeep && parseHumanNumber(this.options.minItemsKeep) > parseHumanNumber(this.options.maxItems)) {
+      if (this.options.minItemsKeep && parseHumanNumber(this.options.minItemsKeep) > parseHumanNumber(this.options.keepAtLeast)) {
         throw new Error(
-          `Option "minItemsKeep" (${this.options.minItemsKeep}) cannot be greater than "maxItems" (${this.options.maxItems}). Please set "minItemsKeep" less than or equal to "maxItems`
+          `Option "minItemsKeep" (${this.options.minItemsKeep}) cannot be greater than "keepAtLeast" (${this.options.keepAtLeast}). Please set "minItemsKeep" less than or equal to "maxItems`
         );
       }
     }
-    if (this.options.mode === 'time-based' && !this.options.maxAge) {
-      throw new Error('maxAge is required for time-based mode');
+    if (this.options.mode === 'time-based' && !this.options.deleteOlderThan) {
+      throw new Error('deleteOlderThan is required for time-based mode');
     }
   }
 
@@ -65,7 +65,7 @@ export default class AutoRemovePlugin extends AdminForthPlugin {
   }
 
   private async cleanupByCount(adminforth: IAdminForth) {
-    const limit = parseHumanNumber(this.options.maxItems!);
+    const limit = parseHumanNumber(this.options.keepAtLeast!);
     const resource = adminforth.resource(this.resource.resourceId);
 
     const allRecords = await resource.list([], null, null, [Sorts.ASC(this.options.createdAtField)]);
@@ -79,7 +79,7 @@ export default class AutoRemovePlugin extends AdminForthPlugin {
   }
 
   private async cleanupByTime(adminforth: IAdminForth) {
-    const maxAgeMs = parseDuration(this.options.maxAge!);
+    const maxAgeMs = parseDuration(this.options.deleteOlderThan!);
     const threshold = Date.now() - maxAgeMs;
     const resource = adminforth.resource(this.resource.resourceId);
 
