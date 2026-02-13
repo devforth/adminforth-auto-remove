@@ -45,10 +45,4 @@ export interface PluginOptions {
    * Default '1d'
    */
   interval?: HumanDuration;
-
-  /**
-   * Delete no more than X items per run
-   * Default 500
-   */
-  maxDeletePerRun?: number;
 }

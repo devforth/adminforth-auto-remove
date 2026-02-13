@@ -71,7 +71,7 @@ export default class AutoRemovePlugin extends AdminForthPlugin {
     const allRecords = await resource.list([], null, null, [Sorts.ASC(this.options.createdAtField)]);
     if (allRecords.length <= limit) return;
 
-    const toDelete = allRecords.slice(0, allRecords.length - limit).slice(0, this.options.maxDeletePerRun);
+    const toDelete = allRecords.slice(0, allRecords.length - limit);
     for (const r of toDelete) {
       await resource.delete(r[this.resource.columns.find(c => c.primaryKey)!.name]);
       console.log(`AutoRemovePlugin: deleted record ${r[this.resource.columns.find(c => c.primaryKey)!.name]} due to count-based limit`);
@@ -84,9 +84,7 @@ export default class AutoRemovePlugin extends AdminForthPlugin {
     const resource = adminforth.resource(this.resource.resourceId);
 
     const allRecords = await resource.list([], null, null, [Sorts.ASC(this.options.createdAtField)]);
-    const toDelete = allRecords
-      .filter(r => new Date(r[this.options.createdAtField]).getTime() < threshold)
-      .slice(0, this.options.maxDeletePerRun);
+    const toDelete = allRecords.filter(r => new Date(r[this.options.createdAtField]).getTime() < threshold);
 
     for (const r of toDelete) {
       await resource.delete(r[this.resource.columns.find(c => c.primaryKey)!.name]);
