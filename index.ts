@@ -4,6 +4,8 @@ import type { PluginOptions } from './types.js';
 import { parseHumanNumber } from './utils/parseNumber.js';
 import { parseDuration } from './utils/parseDuration.js';
 
+const ITEMS_PER_DELETE = 100;
+
 export default class AutoRemovePlugin extends AdminForthPlugin {
   options: PluginOptions;
   resource?: AdminForthResource;
@@ -73,12 +75,10 @@ export default class AutoRemovePlugin extends AdminForthPlugin {
 
     const toDelete = allRecords.slice(0, allRecords.length - limit);
 
-    const itemsPerDelete = 100;
-
     const pkColumn = this.resource.columns.find(c => c.primaryKey)!.name;
 
-    for (let i = 0; i < toDelete.length; i += itemsPerDelete) {
-      const deletePackage = toDelete.slice(i, i + itemsPerDelete);
+    for (let i = 0; i < toDelete.length; i += ITEMS_PER_DELETE) {
+      const deletePackage = toDelete.slice(i, i + ITEMS_PER_DELETE);
       await Promise.all(deletePackage.map(r => resource.delete(r[pkColumn])));
     }
 
@@ -93,12 +93,10 @@ export default class AutoRemovePlugin extends AdminForthPlugin {
     const allRecords = await resource.list([], null, null, [Sorts.ASC(this.options.createdAtField)]);
     const toDelete = allRecords.filter(r => new Date(r[this.options.createdAtField]).getTime() < threshold);
 
-    const itemsPerDelete = 100;
-
     const pkColumn = this.resource.columns.find(c => c.primaryKey)!.name;
 
-    for (let i = 0; i < toDelete.length; i += itemsPerDelete) {
-      const deletePackage = toDelete.slice(i, i + itemsPerDelete);
+    for (let i = 0; i < toDelete.length; i += ITEMS_PER_DELETE) {
+      const deletePackage = toDelete.slice(i, i + ITEMS_PER_DELETE);
 
       await Promise.all(deletePackage.map(r => resource.delete(r[pkColumn])));
     }
