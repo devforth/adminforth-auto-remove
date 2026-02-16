@@ -31,8 +31,12 @@ export interface PluginOptions {
   keepAtLeast?: HumanNumber;
 
   /**
-    * For count-based mode, keep at least X items even if they are older than maxItems (100', '1k', '10k', '1m')
-    */
+   * Minimum number of items to always keep in count-based mode.
+   * This acts as a safety threshold together with `keepAtLeast`.
+   * Example formats: '100', '1k', '10k', '1m'.
+   * 
+   * Validation ensures that minItemsKeep <= keepAtLeast. 
+  */
   minItemsKeep?: HumanNumber;
 
   /**

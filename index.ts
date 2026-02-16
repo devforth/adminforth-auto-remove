@@ -6,8 +6,8 @@ import { parseDuration } from './utils/parseDuration.js';
 
 export default class AutoRemovePlugin extends AdminForthPlugin {
   options: PluginOptions;
-  resource: AdminForthResource;
-  timer: NodeJS.Timeout;
+  resource?: AdminForthResource;
+  timer?: NodeJS.Timeout;
 
   constructor(options: PluginOptions) {
     super(options, import.meta.url);
@@ -43,7 +43,7 @@ export default class AutoRemovePlugin extends AdminForthPlugin {
       }
       if (this.options.minItemsKeep && parseHumanNumber(this.options.minItemsKeep) > parseHumanNumber(this.options.keepAtLeast)) {
         throw new Error(
-          `Option "minItemsKeep" (${this.options.minItemsKeep}) cannot be greater than "keepAtLeast" (${this.options.keepAtLeast}). Please set "minItemsKeep" less than or equal to "maxItems`
+          `Option "minItemsKeep" (${this.options.minItemsKeep}) cannot be greater than "keepAtLeast" (${this.options.keepAtLeast}). Please set "minItemsKeep" less than or equal to "keepAtLeast`
         );
       }
     }
@@ -75,11 +75,11 @@ export default class AutoRemovePlugin extends AdminForthPlugin {
 
     const itemsPerDelete = 100;
 
+    const pkColumn = this.resource.columns.find(c => c.primaryKey)!.name;
+
     for (let i = 0; i < toDelete.length; i += itemsPerDelete) {
       const deletePackage = toDelete.slice(i, i + itemsPerDelete);
-      await Promise.all(
-        deletePackage.map(r => resource.delete(r[this.resource.columns.find(c => c.primaryKey)!.name]))
-      );
+      await Promise.all(deletePackage.map(r => resource.delete(r[pkColumn])));
     }
 
     console.log(`AutoRemovePlugin: deleted ${toDelete.length} records due to count-based limit`);
@@ -95,17 +95,16 @@ export default class AutoRemovePlugin extends AdminForthPlugin {
 
     const itemsPerDelete = 100;
 
+    const pkColumn = this.resource.columns.find(c => c.primaryKey)!.name;
+
     for (let i = 0; i < toDelete.length; i += itemsPerDelete) {
       const deletePackage = toDelete.slice(i, i + itemsPerDelete);
 
-      await Promise.all(
-        deletePackage.map(r => resource.delete(r[this.resource.columns.find(c => c.primaryKey)!.name]))
-      );
-
-    console.log(
-      `AutoRemovePlugin: deleted ${deletePackage.length} records due to time-based limit`
-    );
+      await Promise.all(deletePackage.map(r => resource.delete(r[pkColumn])));
     }
+    console.log(
+      `AutoRemovePlugin: deleted ${toDelete.length} records due to time-based limit`
+    );
   }
 
   setupEndpoints(server: IHttpServer) {
