@@ -11,16 +11,16 @@ It is designed for cleaning up:
 
 ---
 
-## Instalation
+## Installation
 
 To install the plugin:
 
-```bash
+```ts
 npm install @adminforth/auto-remove
 ```
 
 Import it into your resource:
-```bash
+```ts
 import AutoRemovePlugin from '../../plugins/adminforth-auto-remove/index.js';
 ```
 
@@ -31,8 +31,8 @@ export interface PluginOptions {
  createdAtField: string;
 
   /**
-   * - count-based: Delete items > maxItems
-   * - time-based: Delete age > maxAge
+   * - count-based: Delete items > keepAtLeast
+   * - time-based: Delete age > deleteOlderThan
    */
   mode: AutoRemoveMode;
 

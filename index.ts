@@ -23,7 +23,10 @@ export default class AutoRemovePlugin extends AdminForthPlugin {
 
   async modifyResourceConfig(adminforth: IAdminForth, resourceConfig: AdminForthResource) {
     super.modifyResourceConfig(adminforth, resourceConfig);
-    this.resource = resourceConfig;
+
+    if (resourceConfig) {
+      this.resource = resourceConfig;
+    }
 
     const intervalMs = parseDuration(this.options.interval || '1d');
     this.timer = setInterval(() => {
@@ -45,7 +48,7 @@ export default class AutoRemovePlugin extends AdminForthPlugin {
       }
       if (this.options.minItemsKeep && parseHumanNumber(this.options.minItemsKeep) > parseHumanNumber(this.options.keepAtLeast)) {
         throw new Error(
-          `Option "minItemsKeep" (${this.options.minItemsKeep}) cannot be greater than "keepAtLeast" (${this.options.keepAtLeast}). Please set "minItemsKeep" less than or equal to "keepAtLeast`
+          `Option "minItemsKeep" (${this.options.minItemsKeep}) cannot be greater than "keepAtLeast" (${this.options.keepAtLeast}). Please set "minItemsKeep" less than or equal to "keepAtLeast"`
         );
       }
     }
