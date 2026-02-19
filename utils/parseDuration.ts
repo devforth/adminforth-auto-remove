@@ -9,7 +9,7 @@ const UNITS: Record<string, number> = {
 };
 
 export function parseDuration(value: string): number {
-  const match = value.match(/^(\d+)\s*(s|min|h|d|w|mon|y)$/);
+  const match = value.match(/^(\d+)\s*(s|m|h|d|w|mo|y)$/);
   if (!match) {
     throw new Error(`Invalid duration format: ${value}`);
   }
