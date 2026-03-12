@@ -73,7 +73,7 @@ new AutoRemovePlugin({
         createdAtField: 'created_at',   
         mode: 'count-based',            
         keepAtLeast: '200',                  
-        interval: '1s',                  
+        interval: '1mo',                  
         minItemsKeep: '180',       
       }),
 ```
@@ -83,8 +83,8 @@ for time-based mode
 new AutoRemovePlugin({
         createdAtField: 'created_at',
         mode: 'time-based',
-        deleteOlderThan: '3min',
-        interval: '5s',  
+        deleteOlderThan: '3mo',
+        interval: '1mo',  
       }),
 ```
 
