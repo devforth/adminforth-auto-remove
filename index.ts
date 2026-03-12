@@ -60,16 +60,16 @@ export default class AutoRemovePlugin extends AdminForthPlugin {
   private async runCleanup(adminforth: IAdminForth) {
     try {
       if (this.options.mode === 'count-based') {
-        await this.cleanupByCount(adminforth);
+        await this.cleanupByCount(adminforth, this.resourceConfig);
       } else {
-        await this.cleanupByTime(adminforth);
+        await this.cleanupByTime(adminforth, this.resourceConfig);
       }
     } catch (err) {
       console.error('AutoRemovePlugin runCleanup error:', err);
     }
   }
   
-  private async cleanupByCount(adminforth: IAdminForth) {
+  private async cleanupByCount(adminforth: IAdminForth, resourceConfig: AdminForthResource) {
     const limit = parseHumanNumber(this.options.keepAtLeast!);
     const resource = adminforth.resource(this.resource.resourceId);
 
@@ -77,18 +77,17 @@ export default class AutoRemovePlugin extends AdminForthPlugin {
     if (allRecords.length <= limit) return;
 
     const toDelete = allRecords.slice(0, allRecords.length - limit);
-
     const pkColumn = this.resource.columns.find(c => c.primaryKey)!.name;
 
     for (let i = 0; i < toDelete.length; i += ITEMS_PER_DELETE) {
       const deletePackage = toDelete.slice(i, i + ITEMS_PER_DELETE);
-      await Promise.all(deletePackage.map(r => resource.delete(r[pkColumn])));
+      const ids = deletePackage.map(r => r[pkColumn]);
+      await resource.dataConnector.deleteMany({ resource: resourceConfig, recordIds: ids });
     }
-
     console.log(`AutoRemovePlugin: deleted ${toDelete.length} records due to count-based limit`);
   }
 
-  private async cleanupByTime(adminforth: IAdminForth) {
+  private async cleanupByTime(adminforth: IAdminForth, resourceConfig: AdminForthResource) {
     const maxAgeMs = parseDuration(this.options.deleteOlderThan!);
     const threshold = Date.now() - maxAgeMs;
     const resource = adminforth.resource(this.resource.resourceId);
@@ -100,12 +99,11 @@ export default class AutoRemovePlugin extends AdminForthPlugin {
 
     for (let i = 0; i < toDelete.length; i += ITEMS_PER_DELETE) {
       const deletePackage = toDelete.slice(i, i + ITEMS_PER_DELETE);
+      const ids = deletePackage.map(r => r[pkColumn]);
 
-      await Promise.all(deletePackage.map(r => resource.delete(r[pkColumn])));
+      await resource.dataConnector.deleteMany({ resource: resourceConfig, recordIds: ids });
     }
-    console.log(
-      `AutoRemovePlugin: deleted ${toDelete.length} records due to time-based limit`
-    );
+    console.log(`AutoRemovePlugin: deleted ${toDelete.length} records due to time-based limit`);
   }
 
   setupEndpoints(server: IHttpServer) {
