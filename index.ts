@@ -36,12 +36,11 @@ export default class AutoRemovePlugin extends AdminForthPlugin {
 
   validateConfigAfterDiscover(adminforth: IAdminForth, resourceConfig: AdminForthResource) {
     const col = resourceConfig.columns.find(c => c.name === this.options.createdAtField);
-    if (!col) throw new Error(`Field "${this.options.createdAtField}" not found in resource "${resourceConfig.label}"`);
+    if (!col) throw new Error(`Field "${this.options.createdAtField}" not found in resource "${resourceConfig.label}, but required"`);
     if (![AdminForthDataTypes.DATE, AdminForthDataTypes.DATETIME].includes(col.type!)) {
       throw new Error(`Field "${this.options.createdAtField}" in resource "${resourceConfig.label}" must be of type DATE or DATETIME`);
     }
 
-    // Check mode-specific options
     if (this.options.mode === 'count-based') {
       if (!this.options.keepAtLeast) {
         throw new Error('keepAtLeast is required for count-based mode');
@@ -54,6 +53,12 @@ export default class AutoRemovePlugin extends AdminForthPlugin {
     }
     if (this.options.mode === 'time-based' && !this.options.deleteOlderThan) {
       throw new Error('deleteOlderThan is required for time-based mode');
+    }
+    if (this.options.mode !== 'time-based' && this.options.mode !== 'count-based'){
+      throw new Error(`wrong delete mode "${this.options.mode}", please set "time-based" or "count-based"`);
+    }
+    if (!this.options.minItemsKeep){
+      throw new Error('minItemsKeep is required');
     }
   }
 
