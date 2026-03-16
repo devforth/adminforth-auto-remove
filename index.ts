@@ -57,7 +57,7 @@ export default class AutoRemovePlugin extends AdminForthPlugin {
     if (this.options.mode !== 'time-based' && this.options.mode !== 'count-based'){
       throw new Error(`wrong delete mode "${this.options.mode}", please set "time-based" or "count-based"`);
     }
-    if (!this.options.minItemsKeep){
+    if (this.options.mode === 'count-based' && !this.options.minItemsKeep){
       throw new Error('minItemsKeep is required');
     }
   }
