@@ -51,7 +51,7 @@ export interface PluginOptions {
   minItemsKeep?: HumanNumber;
 
   /**
-   * Max age of item for time-based mode ('1d', '7d', '1mon', '1y')
+   * Max age of item for time-based mode ('1d', '7d', '1mo', '1y')
    */
   deleteOlderThan?: HumanDuration;
 
