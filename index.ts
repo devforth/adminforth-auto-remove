@@ -80,7 +80,6 @@ export default class AutoRemovePlugin extends AdminForthPlugin {
 
     const toDelete = allRecords.slice(0, allRecords.length - limit);
     const pkColumn = this.resource.columns.find(c => c.primaryKey)!.name;
-
     const ids = toDelete.map(r => r[pkColumn]);
 
     await resource.dataConnector.deleteMany({ resource: resourceConfig, recordIds: ids });
