@@ -1,9 +1,12 @@
 {
-  "name": "@adminforth/auto-remove-plugin",
+  "name": "@adminforth/auto-remove",
   "version": "1.0.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc && rsync -av --exclude 'node_modules' custom dist/"
   },
@@ -17,7 +20,7 @@
     "semantic-release-slack-bot": "^4.0.2",
     "typescript": "^5.7.3"
   },
-  "dependencies": {
+  "peerDependencies": {
     "adminforth": "2.25.4"
   },
   "release": {
@@ -29,7 +32,7 @@
       [
         "semantic-release-slack-bot",
         {
-          "packageName": "@adminforth/auto-remove-plugin",
+          "packageName": "@adminforth/auto-remove",
           "notifyOnSuccess": true,
           "notifyOnFail": true,
           "slackIcon": ":package:",
