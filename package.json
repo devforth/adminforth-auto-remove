@@ -1,5 +1,5 @@
 {
-  "name": "adminforth-auto-remove-plugin",
+  "name": "@adminforth/auto-remove-plugin",
   "version": "1.0.1",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -27,6 +27,7 @@
       [
         "semantic-release-slack-bot",
         {
+          "packageName": "@adminforth/auto-remove-plugin",
           "notifyOnSuccess": true,
           "notifyOnFail": true,
           "slackIcon": ":package:",
