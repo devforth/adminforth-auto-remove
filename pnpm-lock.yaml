@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       adminforth:
-        specifier: latest
-        version: 2.25.0(@types/node@25.4.0)
+        specifier: 2.25.3
+        version: 2.25.3(@types/node@25.4.0)
     devDependencies:
       '@types/node':
         specifier: latest
@@ -248,8 +248,8 @@ packages:
     resolution: {integrity: sha512-PYAthTa2m2VKxuvSD3DPC/Gy+U+sOA1LAuT8mkmRuvw+NACSaeXEQ+NHcVF7rONl6qcaxV3Uuemwawk+7+SJLw==}
     engines: {node: '>= 0.6'}
 
-  adminforth@2.25.0:
-    resolution: {integrity: sha512-bZzcs9Z9NeROH43cQrCh7qvTiiufPz28sWOJPSPh1bx3Y1kDB8l3KEF+z+0Op1gAQE6YtmF5Z7aC0OjbcJSJAA==}
+  adminforth@2.25.3:
+    resolution: {integrity: sha512-OqWOgdh/NBGWd3r8mpN9NJbeUwujpuAaWCHT2hRaPOkREYiPVTlSkUeZ4rRiXhl0FUDrcXZcP2qO/5yRjlTF3g==}
     hasBin: true
 
   ansi-escapes@7.3.0:
@@ -1506,7 +1506,7 @@ snapshots:
       mime-types: 2.1.35
       negotiator: 0.6.3
 
-  adminforth@2.25.0(@types/node@25.4.0):
+  adminforth@2.25.3(@types/node@25.4.0):
     dependencies:
       '@babel/parser': 7.29.2
       '@clickhouse/client': 1.18.2
