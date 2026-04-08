@@ -1,3 +1,5 @@
+import  {type PluginsCommonOptions } from "adminforth";
+
 export type AutoRemoveMode = 'count-based' | 'time-based';
 
 /**
@@ -16,7 +18,7 @@ export type HumanNumber = string;
  */
 export type HumanDuration = string;
 
-export interface PluginOptions {
+export interface PluginOptions extends PluginsCommonOptions {
   createdAtField: string;
 
   /**
