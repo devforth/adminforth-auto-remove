@@ -20,7 +20,7 @@
     "housekeeping",
     "record-expiration"
   ],
-  "author": "",
+  "author": "DevForth (https://devforth.io)",
   "license": "MIT",
   "description": "Automatic record cleanup plugin for AdminForth with age-based and count-based retention rules",
   "devDependencies": {
