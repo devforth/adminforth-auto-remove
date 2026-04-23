@@ -4,16 +4,25 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
+  "homepage": "https://adminforth.dev/docs/tutorial/Plugins/auto-remove/",
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
     "build": "tsc && rsync -av --exclude 'node_modules' custom dist/"
   },
-  "keywords": [],
+  "keywords": [
+    "adminforth",
+    "data-retention",
+    "record-cleanup",
+    "ttl",
+    "pruning",
+    "housekeeping",
+    "record-expiration"
+  ],
   "author": "",
   "license": "MIT",
-  "description": "",
+  "description": "Automatic record cleanup plugin for AdminForth with age-based and count-based retention rules",
   "devDependencies": {
     "@types/node": "latest",
     "adminforth": "^2.35.0",
