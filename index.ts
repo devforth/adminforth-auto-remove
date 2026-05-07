@@ -30,6 +30,7 @@ export default class AutoRemovePlugin extends AdminForthPlugin {
     this.timer = setInterval(() => {
       this.runCleanup(adminforth).catch(console.error);
     }, intervalMs);
+    this.timer.unref();
   }
 
   validateConfigAfterDiscover(adminforth: IAdminForth, resourceConfig: AdminForthResource) {
