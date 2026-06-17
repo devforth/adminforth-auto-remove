@@ -12,8 +12,8 @@ importers:
         specifier: latest
         version: 25.9.3
       adminforth:
-        specifier: 3.0.1
-        version: 3.0.1(@types/node@25.9.3)
+        specifier: 3.1.1
+        version: 3.1.1(@types/node@25.9.3)
       semantic-release:
         specifier: ^24.2.1
         version: 24.2.9(typescript@5.9.3)
@@ -344,9 +344,6 @@ packages:
   '@types/mime@1.3.5':
     resolution: {integrity: sha512-/pyBZWSLD2n0dcHE3hq8s8ZvcETHtEuF+3E7XVt0Ig2nvsVQXdghHVcEkIWjy9A0wKfTn97a/PSDYohKIlnP/w==}
 
-  '@types/node@25.9.2':
-    resolution: {integrity: sha512-G05zqtJhcDLb8uslf5EjCxXg9G1KQxiV8OS0R26IC//Eoyitzqe8z37I7cqvnZlrlSfgocQRfSn/AHBZJJFyGw==}
-
   '@types/node@25.9.3':
     resolution: {integrity: sha512-603BddQMv3pUcr4U2dhujk83N2tTDVr/34wII2B6bJy6g+8WD6yUb11jszNs0gdi4PesVWl7ABt8nYMVpnLUcg==}
 
@@ -375,15 +372,15 @@ packages:
     resolution: {integrity: sha512-PYAthTa2m2VKxuvSD3DPC/Gy+U+sOA1LAuT8mkmRuvw+NACSaeXEQ+NHcVF7rONl6qcaxV3Uuemwawk+7+SJLw==}
     engines: {node: '>= 0.6'}
 
-  adminforth@3.0.1:
-    resolution: {integrity: sha512-pSgPBDyo+tLY4wnRPaZ/HG7oINv6LR3VfgNwnhNZPFJvEE1DgQqb3+nknKuEkx3bSeJEOXoBd8OvNA98QzzRVA==}
+  adminforth@3.1.1:
+    resolution: {integrity: sha512-+dCQipQzrawY2oDT5DpV5Y04Us1bo/9u4pKVPWJ5y9on2w1gdMW7ds7WLcgkXF4MdxJARdHPlb1JTCQJvzJP4A==}
     hasBin: true
     peerDependencies:
-      '@adminforth/connector-clickhouse': ^1.0.1
-      '@adminforth/connector-mongo': ^1.0.0
-      '@adminforth/connector-mysql': ^1.0.0
-      '@adminforth/connector-postgres': ^1.0.0
-      '@adminforth/connector-sqlite': ^1.0.0
+      '@adminforth/connector-clickhouse': ^1.0.2
+      '@adminforth/connector-mongo': ^1.0.1
+      '@adminforth/connector-mysql': ^1.0.1
+      '@adminforth/connector-postgres': ^1.0.1
+      '@adminforth/connector-sqlite': ^1.0.1
     peerDependenciesMeta:
       '@adminforth/connector-clickhouse':
         optional: true
@@ -2626,15 +2623,15 @@ snapshots:
   '@types/body-parser@1.19.6':
     dependencies:
       '@types/connect': 3.4.38
-      '@types/node': 25.9.2
+      '@types/node': 25.9.3
 
   '@types/connect@3.4.38':
     dependencies:
-      '@types/node': 25.9.2
+      '@types/node': 25.9.3
 
   '@types/express-serve-static-core@4.19.8':
     dependencies:
-      '@types/node': 25.9.2
+      '@types/node': 25.9.3
       '@types/qs': 6.15.0
       '@types/range-parser': 1.2.7
       '@types/send': 1.2.1
@@ -2654,10 +2651,6 @@ snapshots:
 
   '@types/mime@1.3.5': {}
 
-  '@types/node@25.9.2':
-    dependencies:
-      undici-types: 7.24.6
-
   '@types/node@25.9.3':
     dependencies:
       undici-types: 7.24.6
@@ -2671,16 +2664,16 @@ snapshots:
   '@types/send@0.17.6':
     dependencies:
       '@types/mime': 1.3.5
-      '@types/node': 25.9.2
+      '@types/node': 25.9.3
 
   '@types/send@1.2.1':
     dependencies:
-      '@types/node': 25.9.2
+      '@types/node': 25.9.3
 
   '@types/serve-static@1.15.10':
     dependencies:
       '@types/http-errors': 2.0.5
-      '@types/node': 25.9.2
+      '@types/node': 25.9.3
       '@types/send': 0.17.6
 
   '@types/unist@2.0.11': {}
@@ -2690,7 +2683,7 @@ snapshots:
       mime-types: 2.1.35
       negotiator: 0.6.3
 
-  adminforth@3.0.1(@types/node@25.9.3):
+  adminforth@3.1.1(@types/node@25.9.3):
     dependencies:
       '@babel/parser': 7.29.2
       '@faker-js/faker': 9.9.0
